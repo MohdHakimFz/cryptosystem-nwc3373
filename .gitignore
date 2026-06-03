@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Flask / local
+uploads/*
+!uploads/.gitkeep
+.env
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.cursor/
+.DS_Store
+Thumbs.db
+
+# Secrets & demo artifacts (keep examples code, not keys)
+examples/secret.key
+examples/*.enc
+examples/*.decrypted.*
+
+# Large originals (use static/logo.png for the app)
+Asset/

@@ -1,0 +1,57 @@
+{% macro key_field(field_id, placeholder, hint_mode="encrypt") %}
+<div class="form-group key-form-group">
+  <label for="{{ field_id }}">Secret Key</label>
+  <div class="key-input-group">
+    <input
+      type="password"
+      id="{{ field_id }}"
+      class="key-input"
+      placeholder="{{ placeholder }}"
+      title="Type any letters or numbers (e.g. ABC, mykey123), or tap Generate. Use the same key when you decrypt."
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button
+      type="button"
+      class="btn-generate-key"
+      data-target="{{ field_id }}"
+      aria-label="Generate secure random key"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+      </svg>
+      <span class="btn-generate-label">Generate</span>
+    </button>
+  </div>
+  <div class="key-toolbar">
+    <button
+      type="button"
+      class="btn-copy-key"
+      data-target="{{ field_id }}"
+      aria-label="Copy key to clipboard"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copy
+    </button>
+    <button
+      type="button"
+      class="btn-toggle-key"
+      data-target="{{ field_id }}"
+      aria-label="Show or hide key"
+      aria-pressed="false"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+      </svg>
+      <span class="toggle-label">Show</span>
+    </button>
+  </div>
+  {% if hint_mode == "decrypt" %}
+  <p class="key-hint">Enter the <strong>exact same key</strong> you used to encrypt (e.g. <strong>ABC</strong>, <strong>mykey123</strong>). Case and spaces must match.</p>
+  {% else %}
+  <p class="key-hint">Type any letters or numbers (e.g. <strong>ABC</strong>, <strong>mykey123</strong>), or tap <strong>Generate</strong>. Remember this key — you need it to decrypt.</p>
+  {% endif %}
+</div>
+{% endmacro %}

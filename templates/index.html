@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% from "partials/key_field.html" import key_field %}
+
+{% block title %}Encrypt — CryptoSystem{% endblock %}
+
+{% block content %}
+<header class="page-hero">
+  <h1>Encrypt Data</h1>
+  <p>Protect messages and files with Galois LFSR stream cipher or our custom Feistel block cipher.</p>
+  <div class="hero-badges">
+    <span class="badge-stream">Stream Cipher</span>
+    <span class="badge-block">Block Cipher</span>
+  </div>
+</header>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <h2>Text Encryption</h2>
+        <p>Encrypt UTF-8 messages to hexadecimal ciphertext</p>
+      </div>
+      <div class="card-icon teal" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="algo-toggle" id="text-algo-toggle" role="group" aria-label="Encryption algorithm">
+      <button type="button" class="algo-btn active" data-algo="lfsr">Galois LFSR</button>
+      <button type="button" class="algo-btn" data-algo="feistel">Feistel Cipher</button>
+    </div>
+
+    {{ key_field("text-key", "e.g. ABC, mykey123 — or tap Generate", "encrypt") }}
+
+    <div class="form-group">
+      <label for="plaintext">Plaintext Message</label>
+      <textarea id="plaintext" rows="5" placeholder="Enter message to encrypt..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button type="button" class="btn-primary" id="encrypt-text-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Encrypt Text
+      </button>
+    </div>
+
+    <div id="text-error" class="result-box error hidden" role="alert"></div>
+
+    <div class="form-group">
+      <label for="ciphertext-out">Ciphertext (hex)</label>
+      <div class="output-field">
+        <textarea
+          id="ciphertext-out"
+          class="output-textarea"
+          rows="4"
+          readonly
+          placeholder="Encrypted output will appear here..."
+        ></textarea>
+        <button
+          type="button"
+          class="btn-copy-output"
+          id="copy-ciphertext-btn"
+          aria-label="Copy ciphertext to clipboard"
+          title="Copy to clipboard"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span class="btn-copy-output-label">Copy</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <h2>File Encryption</h2>
+        <p>Download encrypted <code class="mono">.enc</code> file</p>
+      </div>
+      <div class="card-icon purple" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+          <path d="M13 2v7h7"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="algo-toggle" id="file-algo-toggle" role="group" aria-label="File encryption algorithm">
+      <button type="button" class="algo-btn active" data-algo="lfsr">Galois LFSR</button>
+      <button type="button" class="algo-btn" data-algo="feistel">Feistel Cipher</button>
+    </div>
+
+    {{ key_field("file-key", "e.g. ABC, mykey123 — or tap Generate", "encrypt") }}
+
+    <input type="file" id="file-input" class="file-input-hidden" tabindex="-1" aria-hidden="true">
+    <label class="file-drop" id="file-drop-zone" for="file-input">
+      <svg class="file-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <p class="file-drop-text">Drop file here or click to browse</p>
+      <p class="file-drop-hint">Any file type supported</p>
+      <p class="file-name hidden" id="file-name"></p>
+    </label>
+
+    <div class="btn-row">
+      <button type="button" class="btn-primary" id="encrypt-file-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Encrypt &amp; Download
+      </button>
+    </div>
+    <p id="file-status" class="status-text"></p>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const getTextAlgo = setupAlgoToggle('text-algo-toggle');
+  const getFileAlgo = setupAlgoToggle('file-algo-toggle');
+  setupFileDrop('file-drop-zone', 'file-input', 'file-name');
+
+  const fileInput = document.getElementById('file-input');
+
+  document.getElementById('encrypt-text-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('encrypt-text-btn');
+    const errorBox = document.getElementById('text-error');
+    const output = document.getElementById('ciphertext-out');
+
+    errorBox.classList.add('hidden');
+    output.value = '';
+    btn.disabled = true;
+
+    try {
+      const response = await fetch('/api/encrypt/text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: document.getElementById('plaintext').value,
+          key: document.getElementById('text-key').value,
+          algorithm: getTextAlgo(),
+        }),
+      });
+      const data = await response.json();
+      if (!data.success) {
+        errorBox.textContent = data.error || 'Encryption failed.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      output.value = data.ciphertext;
+      showToast('Message encrypted successfully', 'success');
+    } catch {
+      errorBox.textContent = 'Network error. Please try again.';
+      errorBox.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('copy-ciphertext-btn').addEventListener('click', async () => {
+    const output = document.getElementById('ciphertext-out');
+    const btn = document.getElementById('copy-ciphertext-btn');
+    const label = btn.querySelector('.btn-copy-output-label');
+    if (!output.value) {
+      showToast('Nothing to copy yet. Encrypt a message first.', 'info');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(output.value);
+      if (label) {
+        const previous = label.textContent;
+        label.textContent = 'Copied';
+        btn.classList.add('is-copied');
+        setTimeout(() => {
+          label.textContent = previous;
+          btn.classList.remove('is-copied');
+        }, 1600);
+      }
+      showToast('Ciphertext copied to clipboard', 'success');
+    } catch {
+      showToast('Could not copy. Select the text and use Ctrl+C.', 'info');
+    }
+  });
+
+  document.getElementById('encrypt-file-btn').addEventListener('click', async () => {
+    const status = document.getElementById('file-status');
+    const btn = document.getElementById('encrypt-file-btn');
+
+    if (!fileInput.files.length) {
+      status.textContent = 'Please select a file first.';
+      status.className = 'status-text error';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('key', document.getElementById('file-key').value);
+    formData.append('algorithm', getFileAlgo());
+
+    btn.disabled = true;
+    status.textContent = 'Encrypting...';
+    status.className = 'status-text';
+
+    try {
+      const response = await fetch('/api/encrypt/file', { method: 'POST', body: formData });
+      const contentType = response.headers.get('content-type') || '';
+      if (!response.ok || contentType.includes('application/json')) {
+        status.textContent = await parseJsonError(response, 'Encryption failed.');
+        status.className = 'status-text error';
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileInput.files[0].name + '.enc';
+      link.click();
+      URL.revokeObjectURL(url);
+      status.textContent = 'Encryption successful. File downloaded.';
+      status.className = 'status-text success';
+      showToast('File encrypted successfully', 'success');
+    } catch {
+      status.textContent = 'Network error. Please try again.';
+      status.className = 'status-text error';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+{% endblock %}

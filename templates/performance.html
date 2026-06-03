@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Performance — CryptoSystem{% endblock %}
+
+{% block content %}
+<header class="page-hero">
+  <h1>Performance Benchmark</h1>
+  <p>Compare encryption and decryption throughput for both ciphers across 1 KB, 100 KB, and 1 MB test payloads.</p>
+  <div class="hero-badges">
+    <span class="badge-stream">Galois LFSR</span>
+    <span class="badge-block">Feistel Cipher</span>
+  </div>
+</header>
+
+<section class="card">
+  <div class="card-header">
+    <div>
+      <h2>Run Benchmark</h2>
+      <p>Measures wall-clock time using high-precision timers</p>
+    </div>
+    <div class="card-icon teal" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 3v18h18"/>
+        <path d="M7 16l4-6 4 3 5-8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button type="button" class="btn-primary btn-lg" id="run-benchmark-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Run Benchmark
+    </button>
+  </div>
+
+  <div id="loading" class="loading hidden" role="status">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Running benchmark on 1 KB, 100 KB, and 1 MB test data&hellip;</p>
+  </div>
+
+  <div id="results-section" class="hidden">
+    <div class="stats-row" id="stats-row"></div>
+
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>File Size</th>
+            <th>LFSR Encrypt</th>
+            <th>LFSR Decrypt</th>
+            <th>Feistel Encrypt</th>
+            <th>Feistel Decrypt</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="perf-chart" aria-label="Encryption time comparison chart"></canvas>
+    </div>
+
+    <p class="tech-note">
+      Galois LFSR is typically faster than the Feistel block cipher because stream ciphers
+      XOR plaintext with a keystream in a single pass, while Feistel encryption applies
+      multiple rounds of bit manipulation per 8-byte block, including PKCS#7 padding overhead.
+    </p>
+  </div>
+
+  <div id="benchmark-error" class="result-box error hidden" role="alert"></div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='chart.js') }}"></script>
+{% endblock %}
