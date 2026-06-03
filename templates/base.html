@@ -35,7 +35,7 @@
   </div>
 
   <header class="navbar">
-    <a href="/" class="navbar-brand">
+    <a href="{{ url_for('index') }}" class="navbar-brand">
       <span class="brand-icon">
         <img
           src="{{ url_for('static', filename='logo.png') }}?v={{ asset_v }}"
@@ -55,19 +55,19 @@
     </a>
 
     <nav class="navbar-links" id="main-nav" aria-label="Main navigation">
-      <a href="/" class="nav-link {% if active_page == 'encrypt' %}active{% endif %}">
+      <a href="{{ url_for('index') }}" class="nav-link {% if active_page == 'encrypt' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <span>Encrypt</span>
       </a>
-      <a href="/decrypt" class="nav-link {% if active_page == 'decrypt' %}active{% endif %}">
+      <a href="{{ url_for('decrypt_page') }}" class="nav-link {% if active_page == 'decrypt' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
         <span>Decrypt</span>
       </a>
-      <a href="/performance" class="nav-link {% if active_page == 'performance' %}active{% endif %}">
+      <a href="{{ url_for('performance_page') }}" class="nav-link {% if active_page == 'performance' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
         <span>Performance</span>
       </a>
-      <a href="/about" class="nav-link {% if active_page == 'about' %}active{% endif %}">
+      <a href="{{ url_for('about_page') }}" class="nav-link {% if active_page == 'about' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
         <span>About</span>
       </a>
@@ -101,19 +101,19 @@
   </footer>
 
   <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
-    <a href="/" class="bottom-nav-item {% if active_page == 'encrypt' %}active{% endif %}">
+    <a href="{{ url_for('index') }}" class="bottom-nav-item {% if active_page == 'encrypt' %}active{% endif %}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span>Encrypt</span>
     </a>
-    <a href="/decrypt" class="bottom-nav-item {% if active_page == 'decrypt' %}active{% endif %}">
+    <a href="{{ url_for('decrypt_page') }}" class="bottom-nav-item {% if active_page == 'decrypt' %}active{% endif %}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
       <span>Decrypt</span>
     </a>
-    <a href="/performance" class="bottom-nav-item {% if active_page == 'performance' %}active{% endif %}">
+    <a href="{{ url_for('performance_page') }}" class="bottom-nav-item {% if active_page == 'performance' %}active{% endif %}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
       <span>Stats</span>
     </a>
-    <a href="/about" class="bottom-nav-item {% if active_page == 'about' %}active{% endif %}">
+    <a href="{{ url_for('about_page') }}" class="bottom-nav-item {% if active_page == 'about' %}active{% endif %}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
       <span>About</span>
     </a>

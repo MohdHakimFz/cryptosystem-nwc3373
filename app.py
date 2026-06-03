@@ -80,22 +80,32 @@ def _is_wrong_key_error(exc: ValueError) -> bool:
     )
 
 
+@app.route("/health")
+def health():
+    """Render/load-balancer health check."""
+    return jsonify({"status": "ok"}), 200
+
+
 @app.route("/")
+@app.route("/encrypt")
 def index():
     return render_template("index.html", active_page="encrypt")
 
 
 @app.route("/decrypt")
+@app.route("/decrypt/")
 def decrypt_page():
     return render_template("decrypt.html", active_page="decrypt")
 
 
 @app.route("/performance")
+@app.route("/performance/")
 def performance_page():
     return render_template("performance.html", active_page="performance")
 
 
 @app.route("/about")
+@app.route("/about/")
 def about_page():
     return render_template("about.html", active_page="about")
 
