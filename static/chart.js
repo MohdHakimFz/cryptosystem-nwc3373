@@ -46,9 +46,18 @@ function buildChartOptions(colors) {
   };
 }
 
+const SIZE_LABELS = { '1kb': '1 KB', '100kb': '100 KB', '1mb': '1 MB' };
+
+function getResultSizes(results) {
+  if (Array.isArray(results.sizes) && results.sizes.length) {
+    return results.sizes;
+  }
+  return ['1kb', '100kb', '1mb'].filter((s) => results.lfsr[s]);
+}
+
 function renderChart(results) {
-  const sizes = ['1kb', '100kb', '1mb'];
-  const labels = ['1 KB', '100 KB', '1 MB'];
+  const sizes = getResultSizes(results);
+  const labels = sizes.map((s) => SIZE_LABELS[s] || s);
   const colors = getChartColors();
 
   const lfsrData = sizes.map((size) => results.lfsr[size].encrypt_ms);
@@ -82,8 +91,8 @@ function renderChart(results) {
 }
 
 function renderResults(results) {
-  const sizes = ['1kb', '100kb', '1mb'];
-  const labels = ['1 KB', '100 KB', '1 MB'];
+  const sizes = getResultSizes(results);
+  const labels = sizes.map((s) => SIZE_LABELS[s] || s);
   const tbody = document.getElementById('results-body');
 
   tbody.innerHTML = '';
@@ -132,20 +141,40 @@ document.getElementById('run-benchmark-btn').addEventListener('click', async () 
   errorBox.classList.add('hidden');
 
   try {
-    const response = await fetch('/api/benchmark', { method: 'POST' });
-    const data = await response.json();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000);
+    const response = await fetch('/api/benchmark', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { Accept: 'application/json' },
+    });
+    clearTimeout(timeoutId);
 
-    if (!data.success) {
-      errorBox.textContent = data.error || 'Benchmark failed.';
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error('Invalid response from server.');
+    }
+
+    if (!response.ok || !data.success) {
+      errorBox.textContent = data.error || `Benchmark failed (${response.status}).`;
       errorBox.classList.remove('hidden');
       return;
     }
 
     renderResults(data.results);
     resultsSection.classList.remove('hidden');
-    showToast('Benchmark completed', 'success');
-  } catch {
-    errorBox.textContent = 'Network error. Please try again.';
+    const sizeNote = (data.results.sizes || []).includes('1mb')
+      ? ''
+      : ' (1 MB skipped on cloud hosting for speed)';
+    showToast('Benchmark completed' + sizeNote, 'success');
+  } catch (err) {
+    const msg =
+      err.name === 'AbortError'
+        ? 'Benchmark timed out. Wait for the site to wake up, then try again.'
+        : 'Network error. If the site was idle, wait 30–60s and retry.';
+    errorBox.textContent = msg;
     errorBox.classList.remove('hidden');
   } finally {
     btn.disabled = false;

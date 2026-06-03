@@ -18,6 +18,7 @@ from ciphers.envelope import (
 )
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB upload limit
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
@@ -93,21 +94,32 @@ def index():
 
 
 @app.route("/decrypt")
-@app.route("/decrypt/")
 def decrypt_page():
     return render_template("decrypt.html", active_page="decrypt")
 
 
 @app.route("/performance")
-@app.route("/performance/")
 def performance_page():
     return render_template("performance.html", active_page="performance")
 
 
 @app.route("/about")
-@app.route("/about/")
 def about_page():
     return render_template("about.html", active_page="about")
+
+
+@app.errorhandler(404)
+def page_not_found(_exc):
+    if request.path.startswith("/api/"):
+        return jsonify({"success": False, "error": "Not found."}), 404
+    return (
+        render_template(
+            "404.html",
+            path=request.path,
+            is_render=bool(os.environ.get("RENDER")),
+        ),
+        404,
+    )
 
 
 @app.route("/api/encrypt/text", methods=["POST"])

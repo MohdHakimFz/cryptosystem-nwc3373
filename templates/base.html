@@ -122,6 +122,11 @@
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
   <script src="{{ url_for('static', filename='theme.js') }}"></script>
+  <script>
+    (function () {
+      fetch('{{ url_for("health") }}', { cache: 'no-store' }).catch(function () {});
+    })();
+  </script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
