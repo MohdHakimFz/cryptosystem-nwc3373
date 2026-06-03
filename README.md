@@ -9,13 +9,9 @@ Secure message and file encryption system implementing:
 
 https://your-app.onrender.com
 
-## Group Members
+## Project Author
 
-| Name | Role |
-|------|------|
-| Member 1 | Stream cipher + testing |
-| Member 2 | Block cipher + performance |
-| Member 3 | Flask integration + report |
+**Mohd Hakim Bin Mohd Fauzi** — solo project (NWC3373): Galois LFSR, Feistel cipher, Flask web app, benchmarks, deployment, and report.
 
 ## How to Run Locally
 
